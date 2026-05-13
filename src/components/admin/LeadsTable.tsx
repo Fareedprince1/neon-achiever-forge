@@ -97,7 +97,7 @@ export function LeadsTable({
   useEffect(() => { setPage(1); }, [search, statusFilter, from, to]);
 
   async function updateStatus(id: string, status: string) {
-    const { error } = await supabase.from(table).update({ status }).eq("id", id);
+    const { error } = await supabase.from(table).update({ status: status as any }).eq("id", id);
     if (error) return toast.error(error.message);
     setRows((r) => r.map((x) => (x.id === id ? { ...x, status } : x)));
     toast.success("Status updated");
