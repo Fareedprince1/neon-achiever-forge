@@ -12,7 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsAndConditionsRouteImport } from './routes/terms-and-conditions'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminDashboardMembershipsRouteImport } from './routes/admin.dashboard.memberships'
+import { Route as AdminDashboardFreeTrialsRouteImport } from './routes/admin.dashboard.free-trials'
+import { Route as AdminDashboardContactRouteImport } from './routes/admin.dashboard.contact'
 
 const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
   id: '/terms-and-conditions',
@@ -29,50 +34,112 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDashboardMembershipsRoute =
+  AdminDashboardMembershipsRouteImport.update({
+    id: '/memberships',
+    path: '/memberships',
+    getParentRoute: () => AdminDashboardRoute,
+  } as any)
+const AdminDashboardFreeTrialsRoute =
+  AdminDashboardFreeTrialsRouteImport.update({
+    id: '/free-trials',
+    path: '/free-trials',
+    getParentRoute: () => AdminDashboardRoute,
+  } as any)
+const AdminDashboardContactRoute = AdminDashboardContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
+  '/admin/dashboard': typeof AdminDashboardRouteWithChildren
+  '/admin/dashboard/contact': typeof AdminDashboardContactRoute
+  '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
+  '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
+  '/admin/dashboard': typeof AdminDashboardRouteWithChildren
+  '/admin/dashboard/contact': typeof AdminDashboardContactRoute
+  '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
+  '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
+  '/admin/dashboard': typeof AdminDashboardRouteWithChildren
+  '/admin/dashboard/contact': typeof AdminDashboardContactRoute
+  '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
+  '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/privacy-policy'
     | '/refund-policy'
     | '/terms-and-conditions'
+    | '/admin/dashboard'
+    | '/admin/dashboard/contact'
+    | '/admin/dashboard/free-trials'
+    | '/admin/dashboard/memberships'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/privacy-policy' | '/refund-policy' | '/terms-and-conditions'
+  to:
+    | '/'
+    | '/admin'
+    | '/privacy-policy'
+    | '/refund-policy'
+    | '/terms-and-conditions'
+    | '/admin/dashboard'
+    | '/admin/dashboard/contact'
+    | '/admin/dashboard/free-trials'
+    | '/admin/dashboard/memberships'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/privacy-policy'
     | '/refund-policy'
     | '/terms-and-conditions'
+    | '/admin/dashboard'
+    | '/admin/dashboard/contact'
+    | '/admin/dashboard/free-trials'
+    | '/admin/dashboard/memberships'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   RefundPolicyRoute: typeof RefundPolicyRoute
   TermsAndConditionsRoute: typeof TermsAndConditionsRoute
@@ -101,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -108,11 +182,66 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/dashboard/memberships': {
+      id: '/admin/dashboard/memberships'
+      path: '/memberships'
+      fullPath: '/admin/dashboard/memberships'
+      preLoaderRoute: typeof AdminDashboardMembershipsRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/dashboard/free-trials': {
+      id: '/admin/dashboard/free-trials'
+      path: '/free-trials'
+      fullPath: '/admin/dashboard/free-trials'
+      preLoaderRoute: typeof AdminDashboardFreeTrialsRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/dashboard/contact': {
+      id: '/admin/dashboard/contact'
+      path: '/contact'
+      fullPath: '/admin/dashboard/contact'
+      preLoaderRoute: typeof AdminDashboardContactRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
   }
 }
 
+interface AdminDashboardRouteChildren {
+  AdminDashboardContactRoute: typeof AdminDashboardContactRoute
+  AdminDashboardFreeTrialsRoute: typeof AdminDashboardFreeTrialsRoute
+  AdminDashboardMembershipsRoute: typeof AdminDashboardMembershipsRoute
+}
+
+const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
+  AdminDashboardContactRoute: AdminDashboardContactRoute,
+  AdminDashboardFreeTrialsRoute: AdminDashboardFreeTrialsRoute,
+  AdminDashboardMembershipsRoute: AdminDashboardMembershipsRoute,
+}
+
+const AdminDashboardRouteWithChildren = AdminDashboardRoute._addFileChildren(
+  AdminDashboardRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRouteWithChildren,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   RefundPolicyRoute: RefundPolicyRoute,
   TermsAndConditionsRoute: TermsAndConditionsRoute,
@@ -120,3 +249,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
