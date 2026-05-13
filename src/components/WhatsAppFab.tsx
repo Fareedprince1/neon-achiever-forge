@@ -1,10 +1,10 @@
 import { MessageCircle } from "lucide-react";
+import { visitorWhatsAppUrl } from "@/lib/notify";
 
 export function WhatsAppFab() {
-  const msg = encodeURIComponent("Hi! I'm interested in joining Achiever Gym.");
   return (
     <a
-      href={`https://wa.me/919876543210?text=${msg}`}
+      href={visitorWhatsAppUrl("Hi! I'm interested in joining Achiever Gym.")}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"

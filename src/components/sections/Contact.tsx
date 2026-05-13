@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Youtube, Twitter } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { notifyOwnerWhatsApp } from "@/lib/notify";
 
 export function Contact() {
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+
   return (
     <section id="contact" className="py-24">
       <div className="container mx-auto max-w-7xl px-4">
@@ -15,18 +21,38 @@ export function Contact() {
 
         <div className="grid md:grid-cols-2 gap-6">
           <form
-            onSubmit={(e) => { e.preventDefault(); toast.success("Message sent — we'll reply within 24h."); }}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+                toast.error("Name, email and message are required");
+                return;
+              }
+              setSubmitting(true);
+              const { error } = await supabase.from("contact_queries").insert({
+                name: form.name.trim(),
+                email: form.email.trim(),
+                phone: form.phone.trim() || null,
+                message: form.message.trim(),
+              });
+              setSubmitting(false);
+              if (error) { toast.error("Could not send. Please try again."); return; }
+              toast.success("Message sent — we'll reply within 24h.");
+              notifyOwnerWhatsApp(
+                `New CONTACT message:\nName: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone || "—"}\nMessage: ${form.message}`
+              );
+              setForm({ name: "", email: "", phone: "", message: "" });
+            }}
             className="bg-card border border-border rounded-3xl p-7 grid gap-4"
           >
-            <Input required placeholder="Name" />
-            <Input required type="email" placeholder="Email" />
-            <Input required type="tel" placeholder="Phone" />
-            <Textarea required placeholder="Message" rows={5} />
-            <Button type="submit" variant="neon" size="lg">Send Message</Button>
+            <Input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input required type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Input type="tel" placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Textarea required placeholder="Message" rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
+            <Button type="submit" variant="neon" size="lg" disabled={submitting}>{submitting ? "Sending..." : "Send Message"}</Button>
           </form>
 
           <div className="bg-card border border-border rounded-3xl p-7 flex flex-col gap-5">
-            <Info icon={Phone} label="Phone" value="+91 98765 43210" />
+            <Info icon={Phone} label="Phone" value="+91 63634 25793" />
             <Info icon={Mail} label="Email" value="hello@achievergym.com" />
             <Info icon={MapPin} label="Address" value="45 Fitness Boulevard, Sector 12, Bengaluru" />
             <Info icon={Clock} label="Hours" value="Mon–Sat 5AM–10PM · Sun 6AM–8PM" />
