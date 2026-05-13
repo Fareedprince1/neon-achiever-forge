@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Outlet } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -12,6 +12,7 @@ export const Route = createFileRoute("/admin/dashboard")({
 function AdminDashboardLayout() {
   const nav = useNavigate();
   const { loading, isAdmin } = useAdminAuth();
+  const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
     if (!loading && !isAdmin) nav({ to: "/admin" });
@@ -22,25 +23,11 @@ function AdminDashboardLayout() {
   }
   if (!isAdmin) return null;
 
+  const isRoot = path === "/admin/dashboard" || path === "/admin/dashboard/";
+
   return (
     <AdminShell>
-      <RouteOrOverview />
+      {isRoot ? <Overview /> : <Outlet />}
     </AdminShell>
   );
-}
-
-function RouteOrOverview() {
-  // If a child route is matched, TanStack renders Outlet; otherwise show overview.
-  return (
-    <>
-      <OutletOrOverview />
-    </>
-  );
-}
-
-function OutletOrOverview() {
-  // We render Outlet; child index route shows Overview. For root /admin/dashboard show Overview directly.
-  const path = typeof window !== "undefined" ? window.location.pathname : "";
-  if (path === "/admin/dashboard" || path === "/admin/dashboard/") return <Overview />;
-  return <Outlet />;
 }
