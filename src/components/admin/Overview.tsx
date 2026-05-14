@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, MessageSquare, ClipboardList, TrendingUp, Clock, Users } from "lucide-react";
+import { toast } from "sonner";
 
 type Stats = {
   todayLeads: number;
@@ -17,38 +18,59 @@ const TABLES = ["free_trial_requests", "contact_queries", "membership_inquiries"
 export function Overview() {
   const [stats, setStats] = useState<Stats | null>(null);
 
+  async function load() {
+    const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(); startOfMonth.setDate(1); startOfMonth.setHours(0, 0, 0, 0);
+
+    const all = await Promise.all(
+      TABLES.map((t) => supabase.from(t).select("status,created_at"))
+    );
+    const rows = all.flatMap((r) => (r.data ?? []) as { status: string; created_at: string }[]);
+    const todayLeads = rows.filter((r) => new Date(r.created_at) >= startOfDay).length;
+    const monthLeads = rows.filter((r) => new Date(r.created_at) >= startOfMonth).length;
+    const pending = rows.filter((r) => r.status === "new" || r.status === "called").length;
+    const converted = rows.filter((r) => r.status === "converted" || r.status === "resolved").length;
+    const conversionRate = rows.length ? Math.round((converted / rows.length) * 100) : 0;
+
+    setStats({
+      todayLeads,
+      monthLeads,
+      pending,
+      conversionRate,
+      trials: (all[0].data ?? []).length,
+      contacts: (all[1].data ?? []).length,
+      memberships: (all[2].data ?? []).length,
+    });
+  }
+
   useEffect(() => {
-    (async () => {
-      const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
-      const startOfMonth = new Date(); startOfMonth.setDate(1); startOfMonth.setHours(0, 0, 0, 0);
+    load();
 
-      const all = await Promise.all(
-        TABLES.map((t) => supabase.from(t).select("status,created_at"))
-      );
-      const rows = all.flatMap((r) => (r.data ?? []) as { status: string; created_at: string }[]);
-      const todayLeads = rows.filter((r) => new Date(r.created_at) >= startOfDay).length;
-      const monthLeads = rows.filter((r) => new Date(r.created_at) >= startOfMonth).length;
-      const pending = rows.filter((r) => r.status === "new" || r.status === "called").length;
-      const converted = rows.filter((r) => r.status === "converted" || r.status === "resolved").length;
-      const conversionRate = rows.length ? Math.round((converted / rows.length) * 100) : 0;
-
-      setStats({
-        todayLeads,
-        monthLeads,
-        pending,
-        conversionRate,
-        trials: (all[0].data ?? []).length,
-        contacts: (all[1].data ?? []).length,
-        memberships: (all[2].data ?? []).length,
-      });
-    })();
+    const channels = TABLES.map((t) =>
+      supabase
+        .channel(`overview-${t}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: t }, (payload) => {
+          load();
+          if (payload.eventType === "INSERT") {
+            const r: any = payload.new;
+            const labels: Record<string, string> = {
+              free_trial_requests: "🔔 New Free Trial Request",
+              contact_queries: "🔔 New Contact Query",
+              membership_inquiries: "🔔 New Membership Inquiry",
+            };
+            toast.success(labels[t] ?? "New lead", { description: `${r.name ?? ""} ${r.phone ? "· " + r.phone : ""}` });
+          }
+        })
+        .subscribe()
+    );
+    return () => { channels.forEach((c) => supabase.removeChannel(c)); };
   }, []);
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-display text-3xl md:text-4xl">Overview</h1>
-        <p className="text-sm text-muted-foreground">Your gym's lead pipeline at a glance.</p>
+        <p className="text-sm text-muted-foreground">Your gym's lead pipeline at a glance. Updates in real-time.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

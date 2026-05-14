@@ -76,7 +76,26 @@ export function LeadsTable({
     setRows((data ?? []) as AnyRow[]);
   }
 
-  useEffect(() => { load(); }, [table]);
+  useEffect(() => {
+    load();
+    const ch = supabase
+      .channel(`leads-${table}`)
+      .on("postgres_changes", { event: "*", schema: "public", table }, (payload) => {
+        if (payload.eventType === "INSERT") {
+          const row = payload.new as AnyRow;
+          setRows((r) => [row, ...r.filter((x) => x.id !== row.id)]);
+          toast.success(`🔔 New lead: ${row.name ?? ""}`, { description: row.phone ?? row.email ?? "" });
+        } else if (payload.eventType === "UPDATE") {
+          const row = payload.new as AnyRow;
+          setRows((r) => r.map((x) => (x.id === row.id ? row : x)));
+        } else if (payload.eventType === "DELETE") {
+          const old = payload.old as AnyRow;
+          setRows((r) => r.filter((x) => x.id !== old.id));
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [table]);
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();

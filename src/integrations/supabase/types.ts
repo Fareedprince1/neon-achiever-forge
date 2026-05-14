@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      class_schedule: {
+        Row: {
+          class_name: string
+          created_at: string
+          day: string
+          duration: string
+          id: string
+          sort_order: number
+          spots_left: number
+          time: string
+          trainer: string
+        }
+        Insert: {
+          class_name: string
+          created_at?: string
+          day: string
+          duration: string
+          id?: string
+          sort_order?: number
+          spots_left?: number
+          time: string
+          trainer: string
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          day?: string
+          duration?: string
+          id?: string
+          sort_order?: number
+          spots_left?: number
+          time?: string
+          trainer?: string
+        }
+        Relationships: []
+      }
       contact_queries: {
         Row: {
           created_at: string
@@ -119,6 +155,42 @@ export type Database = {
           phone?: string
           plan?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          created_at: string
+          duration: string | null
+          id: string
+          is_active: boolean
+          member_image: string | null
+          member_name: string
+          quote: string
+          rating: number
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          duration?: string | null
+          id?: string
+          is_active?: boolean
+          member_image?: string | null
+          member_name: string
+          quote: string
+          rating?: number
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          duration?: string | null
+          id?: string
+          is_active?: boolean
+          member_image?: string | null
+          member_name?: string
+          quote?: string
+          rating?: number
+          sort_order?: number
         }
         Relationships: []
       }
