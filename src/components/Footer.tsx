@@ -19,7 +19,7 @@ export function Footer() {
               ))}
             </div>
           </div>
-          <FooterCol title="Quick Links" links={["Home", "About", "Coaches", "Gallery", "Contact"]} />
+          <FooterCol title="Quick Links" links={["Home", "About", "Coaches", "Gallery", "Inquiry"]} />
           <FooterCol title="Programs" links={["HIIT", "Strength", "Cardio", "Hypertrophy", "TRX"]} />
           <FooterCol title="Contact" links={["+91 98765 43210", "hello@achievergym.com", "Sector 12, Bengaluru"]} />
         </div>
