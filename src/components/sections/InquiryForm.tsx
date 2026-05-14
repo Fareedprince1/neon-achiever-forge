@@ -12,7 +12,7 @@ export function InquiryForm() {
   const [submitting, setSubmitting] = useState(false);
 
   return (
-    <section className="py-24 bg-card/30">
+    <section id="inquiry" className="py-24 bg-card/30">
       <div className="container mx-auto max-w-3xl px-4">
         <div className="text-center mb-10">
           <span className="text-xs uppercase tracking-[0.3em] neon-text">Inquiry</span>
