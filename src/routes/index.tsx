@@ -63,7 +63,7 @@ function Index() {
         <InquiryForm />
         <FAQ />
         <Location />
-        <Contact />
+        
       </main>
       <Footer />
       <FreeTrialModal open={isOpen} onOpenChange={setBoth} />
