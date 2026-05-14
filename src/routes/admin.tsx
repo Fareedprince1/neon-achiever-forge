@@ -1,12 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/use-admin-auth";
-import { useEffect } from "react";
-import { Lock } from "lucide-react";
+import { Lock, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin Login | Achiever Gym" }, { name: "robots", content: "noindex" }] }),
@@ -15,24 +13,47 @@ export const Route = createFileRoute("/admin")({
 
 function AdminLogin() {
   const nav = useNavigate();
-  const { loading, isAdmin, userId } = useAdminAuth();
+  const [checking, setChecking] = useState(true);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
+  // Auto-redirect if already signed in + listen for sign-in events
   useEffect(() => {
-    if (!loading && isAdmin) nav({ to: "/admin/dashboard" });
-  }, [loading, isAdmin, nav]);
+    const goIfAuthed = (uid: string | null) => {
+      if (uid) {
+        window.location.href = "/admin/dashboard";
+      } else {
+        setChecking(false);
+      }
+    };
+
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        window.location.href = "/admin/dashboard";
+      }
+    });
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      goIfAuthed(session?.user?.id ?? null);
+    });
+
+    return () => sub.subscription.unsubscribe();
+  }, [nav]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      setBusy(false);
-      if (error) return toast.error(error.message);
-      toast.success("Signed in");
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setBusy(false);
+        return toast.error(error.message);
+      }
+      if (data.user) {
+        window.location.href = "/admin/dashboard";
+      }
     } else {
       const redirectUrl = `${window.location.origin}/admin`;
       const { error } = await supabase.auth.signUp({
@@ -42,8 +63,16 @@ function AdminLogin() {
       });
       setBusy(false);
       if (error) return toast.error(error.message);
-      toast.success("Account created. Check your email to confirm, then ask the owner to grant admin access.");
+      toast.success("Account created. Confirm your email, then ask the owner to grant admin access.");
     }
+  }
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   return (
@@ -60,7 +89,7 @@ function AdminLogin() {
           <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
           <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
           <Button type="submit" variant="neon" size="lg" disabled={busy}>
-            {busy ? "Please wait..." : mode === "login" ? "Sign In" : "Create Admin Account"}
+            {busy ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Please wait...</> : mode === "login" ? "Sign In" : "Create Admin Account"}
           </Button>
         </form>
 
@@ -71,12 +100,6 @@ function AdminLogin() {
         >
           {mode === "login" ? "First time? Create an account" : "Have an account? Sign in"}
         </button>
-
-        {userId && !isAdmin && !loading && (
-          <p className="mt-4 text-xs text-destructive text-center">
-            Signed in but not an admin yet. Ask the owner to grant your user the admin role.
-          </p>
-        )}
       </div>
     </div>
   );

@@ -15,6 +15,8 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminDashboardTestimonialsRouteImport } from './routes/admin.dashboard.testimonials'
+import { Route as AdminDashboardScheduleRouteImport } from './routes/admin.dashboard.schedule'
 import { Route as AdminDashboardMembershipsRouteImport } from './routes/admin.dashboard.memberships'
 import { Route as AdminDashboardFreeTrialsRouteImport } from './routes/admin.dashboard.free-trials'
 import { Route as AdminDashboardContactRouteImport } from './routes/admin.dashboard.contact'
@@ -49,6 +51,17 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminDashboardTestimonialsRoute =
+  AdminDashboardTestimonialsRouteImport.update({
+    id: '/testimonials',
+    path: '/testimonials',
+    getParentRoute: () => AdminDashboardRoute,
+  } as any)
+const AdminDashboardScheduleRoute = AdminDashboardScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
 const AdminDashboardMembershipsRoute =
   AdminDashboardMembershipsRouteImport.update({
     id: '/memberships',
@@ -77,6 +90,8 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard/contact': typeof AdminDashboardContactRoute
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
+  '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
+  '/admin/dashboard/testimonials': typeof AdminDashboardTestimonialsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -88,6 +103,8 @@ export interface FileRoutesByTo {
   '/admin/dashboard/contact': typeof AdminDashboardContactRoute
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
+  '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
+  '/admin/dashboard/testimonials': typeof AdminDashboardTestimonialsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -100,6 +117,8 @@ export interface FileRoutesById {
   '/admin/dashboard/contact': typeof AdminDashboardContactRoute
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
+  '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
+  '/admin/dashboard/testimonials': typeof AdminDashboardTestimonialsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -113,6 +132,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/contact'
     | '/admin/dashboard/free-trials'
     | '/admin/dashboard/memberships'
+    | '/admin/dashboard/schedule'
+    | '/admin/dashboard/testimonials'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -124,6 +145,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/contact'
     | '/admin/dashboard/free-trials'
     | '/admin/dashboard/memberships'
+    | '/admin/dashboard/schedule'
+    | '/admin/dashboard/testimonials'
   id:
     | '__root__'
     | '/'
@@ -135,6 +158,8 @@ export interface FileRouteTypes {
     | '/admin/dashboard/contact'
     | '/admin/dashboard/free-trials'
     | '/admin/dashboard/memberships'
+    | '/admin/dashboard/schedule'
+    | '/admin/dashboard/testimonials'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -189,6 +214,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/dashboard/testimonials': {
+      id: '/admin/dashboard/testimonials'
+      path: '/testimonials'
+      fullPath: '/admin/dashboard/testimonials'
+      preLoaderRoute: typeof AdminDashboardTestimonialsRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
+    '/admin/dashboard/schedule': {
+      id: '/admin/dashboard/schedule'
+      path: '/schedule'
+      fullPath: '/admin/dashboard/schedule'
+      preLoaderRoute: typeof AdminDashboardScheduleRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
     '/admin/dashboard/memberships': {
       id: '/admin/dashboard/memberships'
       path: '/memberships'
@@ -217,12 +256,16 @@ interface AdminDashboardRouteChildren {
   AdminDashboardContactRoute: typeof AdminDashboardContactRoute
   AdminDashboardFreeTrialsRoute: typeof AdminDashboardFreeTrialsRoute
   AdminDashboardMembershipsRoute: typeof AdminDashboardMembershipsRoute
+  AdminDashboardScheduleRoute: typeof AdminDashboardScheduleRoute
+  AdminDashboardTestimonialsRoute: typeof AdminDashboardTestimonialsRoute
 }
 
 const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
   AdminDashboardContactRoute: AdminDashboardContactRoute,
   AdminDashboardFreeTrialsRoute: AdminDashboardFreeTrialsRoute,
   AdminDashboardMembershipsRoute: AdminDashboardMembershipsRoute,
+  AdminDashboardScheduleRoute: AdminDashboardScheduleRoute,
+  AdminDashboardTestimonialsRoute: AdminDashboardTestimonialsRoute,
 }
 
 const AdminDashboardRouteWithChildren = AdminDashboardRoute._addFileChildren(

@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Sparkles, MessageSquare, ClipboardList, LogOut, Menu, X, Dumbbell } from "lucide-react";
+import { LayoutDashboard, Sparkles, MessageSquare, ClipboardList, LogOut, Menu, X, Dumbbell, CalendarDays, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,8 @@ const NAV = [
   { to: "/admin/dashboard/free-trials", label: "Free Trials", icon: Sparkles },
   { to: "/admin/dashboard/contact", label: "Contact Queries", icon: MessageSquare },
   { to: "/admin/dashboard/memberships", label: "Memberships", icon: ClipboardList },
+  { to: "/admin/dashboard/schedule", label: "Class Schedule", icon: CalendarDays },
+  { to: "/admin/dashboard/testimonials", label: "Testimonials", icon: Star },
 ] as const;
 
 export function AdminShell({ children }: { children: ReactNode }) {
@@ -26,7 +28,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed lg:static inset-y-0 left-0 z-40 w-64 bg-card border-r border-border flex flex-col transition-transform",
@@ -39,7 +40,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             ACHI<span className="neon-text">EVER</span>
           </Link>
         </div>
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {NAV.map((n) => {
             const active = path === n.to;
             return (
@@ -67,12 +68,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* Mobile backdrop */}
       {open && (
         <div className="fixed inset-0 bg-black/60 z-30 lg:hidden" onClick={() => setOpen(false)} />
       )}
 
-      {/* Main */}
       <div className="flex-1 min-w-0 flex flex-col">
         <header className="h-16 border-b border-border flex items-center justify-between px-4 lg:px-6 bg-background/80 backdrop-blur sticky top-0 z-20">
           <button className="lg:hidden p-2" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
