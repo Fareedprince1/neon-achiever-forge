@@ -21,7 +21,7 @@ import { Blog } from "@/components/sections/Blog";
 import { InquiryForm } from "@/components/sections/InquiryForm";
 import { FAQ } from "@/components/sections/FAQ";
 import { Location } from "@/components/sections/Location";
-import { Contact } from "@/components/sections/Contact";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -63,7 +63,7 @@ function Index() {
         <InquiryForm />
         <FAQ />
         <Location />
-        <Contact />
+        
       </main>
       <Footer />
       <FreeTrialModal open={isOpen} onOpenChange={setBoth} />

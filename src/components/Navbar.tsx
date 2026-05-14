@@ -13,7 +13,7 @@ const links = [
   { label: "Pricing", href: "#pricing" },
   { label: "Gallery", href: "#gallery" },
   { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
+  { label: "Inquiry", href: "#inquiry" },
 ];
 
 export function Navbar() {
