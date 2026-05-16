@@ -24,9 +24,9 @@ export function Footer() {
           <FooterCol title="Contact" links={["+91 98765 43210", "hello@achievergym.com", "Sector 12, Bengaluru"]} />
         </div>
 
-        <div className="border-t border-border mt-12 pt-6 flex flex-col md:flex-row gap-3 items-center justify-between text-xs text-muted-foreground">
+        <div className="border-t border-border mt-12 pt-6 pb-20 sm:pb-6 sm:pr-24 flex flex-col md:flex-row gap-3 items-center justify-between text-xs text-muted-foreground">
           <div>© 2025 Achiever Gym · GST: 29XXXXX1234X1ZX</div>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
             <Link to="/privacy-policy" className="hover:text-primary">Privacy Policy</Link>
             <Link to="/terms-and-conditions" className="hover:text-primary">Terms</Link>
             <Link to="/refund-policy" className="hover:text-primary">Refund Policy</Link>

@@ -14,33 +14,26 @@ export const Route = createFileRoute("/admin")({
 function AdminLogin() {
   const nav = useNavigate();
   const [checking, setChecking] = useState(true);
+  const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // Auto-redirect if already signed in + listen for sign-in events
+  // Detect existing session but DO NOT auto-redirect.
+  // Show a "Continue to dashboard" button instead so the sign-in page is always visible.
   useEffect(() => {
-    const goIfAuthed = (uid: string | null) => {
-      if (uid) {
-        window.location.href = "/admin/dashboard";
-      } else {
-        setChecking(false);
-      }
-    };
-
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        window.location.href = "/admin/dashboard";
-      }
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedInEmail(session?.user?.email ?? null);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      goIfAuthed(session?.user?.id ?? null);
+      setSignedInEmail(session?.user?.email ?? null);
+      setChecking(false);
     });
 
     return () => sub.subscription.unsubscribe();
-  }, [nav]);
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,6 +45,7 @@ function AdminLogin() {
         return toast.error(error.message);
       }
       if (data.user) {
+        toast.success("Signed in. Loading dashboard...");
         window.location.href = "/admin/dashboard";
       }
     } else {
@@ -65,6 +59,12 @@ function AdminLogin() {
       if (error) return toast.error(error.message);
       toast.success("Account created. Confirm your email, then ask the owner to grant admin access.");
     }
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    setSignedInEmail(null);
+    toast.success("Signed out");
   }
 
   if (checking) {
@@ -85,21 +85,37 @@ function AdminLogin() {
           <Lock className="h-3 w-3" /> Admin Access
         </div>
 
-        <form onSubmit={submit} className="grid gap-3">
-          <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-          <Button type="submit" variant="neon" size="lg" disabled={busy}>
-            {busy ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Please wait...</> : mode === "login" ? "Sign In" : "Create Admin Account"}
-          </Button>
-        </form>
+        {signedInEmail ? (
+          <div className="grid gap-3">
+            <p className="text-sm text-center text-muted-foreground">
+              Signed in as <span className="text-foreground font-medium">{signedInEmail}</span>
+            </p>
+            <Button variant="neon" size="lg" onClick={() => (window.location.href = "/admin/dashboard")}>
+              Continue to Dashboard
+            </Button>
+            <Button variant="outline" onClick={signOut}>
+              Sign out
+            </Button>
+          </div>
+        ) : (
+          <>
+            <form onSubmit={submit} className="grid gap-3">
+              <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+              <Button type="submit" variant="neon" size="lg" disabled={busy}>
+                {busy ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Please wait...</> : mode === "login" ? "Sign In" : "Create Admin Account"}
+              </Button>
+            </form>
 
-        <button
-          type="button"
-          onClick={() => setMode(mode === "login" ? "signup" : "login")}
-          className="mt-4 text-xs text-muted-foreground hover:text-primary w-full text-center"
-        >
-          {mode === "login" ? "First time? Create an account" : "Have an account? Sign in"}
-        </button>
+            <button
+              type="button"
+              onClick={() => setMode(mode === "login" ? "signup" : "login")}
+              className="mt-4 text-xs text-muted-foreground hover:text-primary w-full text-center"
+            >
+              {mode === "login" ? "First time? Create an account" : "Have an account? Sign in"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
