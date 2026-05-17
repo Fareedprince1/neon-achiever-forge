@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,27 +12,21 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLogin() {
-  const nav = useNavigate();
   const [checking, setChecking] = useState(true);
-  const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // Detect existing session but DO NOT auto-redirect.
-  // Show a "Continue to dashboard" button instead so the sign-in page is always visible.
+  // If already signed in, auto-redirect to dashboard. Otherwise show login form.
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSignedInEmail(session?.user?.email ?? null);
-    });
-
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSignedInEmail(session?.user?.email ?? null);
+      if (session?.user) {
+        window.location.href = "/admin/dashboard";
+        return;
+      }
       setChecking(false);
     });
-
-    return () => sub.subscription.unsubscribe();
   }, []);
 
   async function submit(e: React.FormEvent) {
@@ -61,11 +55,6 @@ function AdminLogin() {
     }
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    setSignedInEmail(null);
-    toast.success("Signed out");
-  }
 
   if (checking) {
     return (
@@ -85,37 +74,21 @@ function AdminLogin() {
           <Lock className="h-3 w-3" /> Admin Access
         </div>
 
-        {signedInEmail ? (
-          <div className="grid gap-3">
-            <p className="text-sm text-center text-muted-foreground">
-              Signed in as <span className="text-foreground font-medium">{signedInEmail}</span>
-            </p>
-            <Button variant="neon" size="lg" onClick={() => (window.location.href = "/admin/dashboard")}>
-              Continue to Dashboard
-            </Button>
-            <Button variant="outline" onClick={signOut}>
-              Sign out
-            </Button>
-          </div>
-        ) : (
-          <>
-            <form onSubmit={submit} className="grid gap-3">
-              <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
-              <Button type="submit" variant="neon" size="lg" disabled={busy}>
-                {busy ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Please wait...</> : mode === "login" ? "Sign In" : "Create Admin Account"}
-              </Button>
-            </form>
+        <form onSubmit={submit} className="grid gap-3">
+          <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+          <Button type="submit" variant="neon" size="lg" disabled={busy}>
+            {busy ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Please wait...</> : mode === "login" ? "Sign In" : "Create Admin Account"}
+          </Button>
+        </form>
 
-            <button
-              type="button"
-              onClick={() => setMode(mode === "login" ? "signup" : "login")}
-              className="mt-4 text-xs text-muted-foreground hover:text-primary w-full text-center"
-            >
-              {mode === "login" ? "First time? Create an account" : "Have an account? Sign in"}
-            </button>
-          </>
-        )}
+        <button
+          type="button"
+          onClick={() => setMode(mode === "login" ? "signup" : "login")}
+          className="mt-4 text-xs text-muted-foreground hover:text-primary w-full text-center"
+        >
+          {mode === "login" ? "First time? Create an account" : "Have an account? Sign in"}
+        </button>
       </div>
     </div>
   );

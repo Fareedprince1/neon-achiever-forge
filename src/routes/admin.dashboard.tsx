@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 function AdminDashboardLayout() {
-  const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [state, setState] = useState<"checking" | "ok" | "denied">("checking");
 
@@ -20,10 +19,7 @@ function AdminDashboardLayout() {
 
     const check = async (userId: string | null) => {
       if (!userId) {
-        if (active) {
-          setState("denied");
-          nav({ to: "/admin" });
-        }
+        if (active) window.location.href = "/admin";
         return;
       }
       const { data } = await supabase
@@ -35,14 +31,13 @@ function AdminDashboardLayout() {
       if (!active) return;
       if (data) setState("ok");
       else {
-        setState("denied");
-        nav({ to: "/admin" });
+        window.location.href = "/admin";
       }
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        nav({ to: "/admin" });
+        window.location.href = "/admin";
       } else {
         setTimeout(() => check(session?.user?.id ?? null), 0);
       }
@@ -56,7 +51,7 @@ function AdminDashboardLayout() {
       active = false;
       sub.subscription.unsubscribe();
     };
-  }, [nav]);
+  }, []);
 
   if (state !== "ok") {
     return (
