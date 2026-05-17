@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { LayoutDashboard, Sparkles, MessageSquare, ClipboardList, LogOut, Menu, X, Dumbbell, CalendarDays, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, type ReactNode } from "react";
@@ -16,7 +16,7 @@ const NAV = [
 ] as const;
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const nav = useNavigate();
+  export function AdminShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
 
