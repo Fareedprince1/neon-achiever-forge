@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,8 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLogin() {
-  const nav = useNavigate();
   const [checking, setChecking] = useState(true);
-  const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
