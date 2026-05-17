@@ -20,19 +20,15 @@ function AdminLogin() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // Detect existing session but DO NOT auto-redirect.
-  // Show a "Continue to dashboard" button instead so the sign-in page is always visible.
+  // If already signed in, auto-redirect to dashboard. Otherwise show login form.
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSignedInEmail(session?.user?.email ?? null);
-    });
-
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSignedInEmail(session?.user?.email ?? null);
+      if (session?.user) {
+        window.location.href = "/admin/dashboard";
+        return;
+      }
       setChecking(false);
     });
-
-    return () => sub.subscription.unsubscribe();
   }, []);
 
   async function submit(e: React.FormEvent) {
