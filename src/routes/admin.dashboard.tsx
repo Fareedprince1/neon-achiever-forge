@@ -20,10 +20,7 @@ function AdminDashboardLayout() {
 
     const check = async (userId: string | null) => {
       if (!userId) {
-        if (active) {
-          setState("denied");
-          nav({ to: "/admin" });
-        }
+        if (active) window.location.href = "/admin";
         return;
       }
       const { data } = await supabase
@@ -35,14 +32,13 @@ function AdminDashboardLayout() {
       if (!active) return;
       if (data) setState("ok");
       else {
-        setState("denied");
-        nav({ to: "/admin" });
+        window.location.href = "/admin";
       }
     };
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
-        nav({ to: "/admin" });
+        window.location.href = "/admin";
       } else {
         setTimeout(() => check(session?.user?.id ?? null), 0);
       }
@@ -56,7 +52,7 @@ function AdminDashboardLayout() {
       active = false;
       sub.subscription.unsubscribe();
     };
-  }, [nav]);
+  }, []);
 
   if (state !== "ok") {
     return (
