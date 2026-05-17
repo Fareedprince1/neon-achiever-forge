@@ -16,7 +16,6 @@ const NAV = [
 ] as const;
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  export function AdminShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
 
