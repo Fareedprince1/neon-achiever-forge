@@ -14,7 +14,6 @@ export const Route = createFileRoute("/admin")({
 function AdminLogin() {
   const [checking, setChecking] = useState(true);
   const [mode, setMode] = useState<"login" | "signup">("login");
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -56,11 +55,6 @@ function AdminLogin() {
     }
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    setSignedInEmail(null);
-    toast.success("Signed out");
-  }
 
   if (checking) {
     return (
