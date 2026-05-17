@@ -17,9 +17,12 @@ function AdminDashboardLayout() {
   useEffect(() => {
     let active = true;
 
-    const check = async (userId: string | null) => {
+    // Single source of truth: getSession() restores from storage.
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (!active) return;
+      const userId = session?.user?.id;
       if (!userId) {
-        if (active) window.location.href = "/admin";
+        window.location.href = "/admin";
         return;
       }
       const { data } = await supabase
@@ -29,22 +32,18 @@ function AdminDashboardLayout() {
         .eq("role", "admin")
         .maybeSingle();
       if (!active) return;
-      if (data) setState("ok");
-      else {
-        window.location.href = "/admin";
-      }
-    };
-
-    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_OUT") {
-        window.location.href = "/admin";
+      if (data) {
+        setState("ok");
       } else {
-        setTimeout(() => check(session?.user?.id ?? null), 0);
+        window.location.href = "/admin";
       }
     });
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      check(session?.user?.id ?? null);
+    // Only react to explicit sign-out after initial check.
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        window.location.href = "/admin";
+      }
     });
 
     return () => {
