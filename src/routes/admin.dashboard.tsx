@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 function AdminDashboardLayout() {
-  const nav = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [state, setState] = useState<"checking" | "ok" | "denied">("checking");
 

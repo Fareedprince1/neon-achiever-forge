@@ -23,7 +23,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   async function logout() {
     await supabase.auth.signOut();
     toast.success("Signed out");
-    nav({ to: "/admin" });
+    window.location.href = "/admin";
   }
 
   return (
