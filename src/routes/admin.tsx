@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -12,22 +12,10 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLogin() {
-  const [checking, setChecking] = useState(true);
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-
-  // If already signed in, auto-redirect to dashboard. Otherwise show login form.
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        window.location.href = "/admin/dashboard";
-        return;
-      }
-      setChecking(false);
-    });
-  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,15 +41,6 @@ function AdminLogin() {
       if (error) return toast.error(error.message);
       toast.success("Account created. Confirm your email, then ask the owner to grant admin access.");
     }
-  }
-
-
-  if (checking) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
   }
 
   return (
