@@ -19,7 +19,7 @@ export function FAQ() {
           <span className="text-xs uppercase tracking-[0.3em] neon-text">FAQ</span>
           <h2 className="text-display text-4xl md:text-6xl mt-3">Got Questions? <span className="neon-text">We Have Answers.</span></h2>
         </div>
-        <Accordion type="single" collapsible className="space-y-3">
+        <Accordion type="single" collapsible defaultValue="item-0" className="space-y-3">
           {faqs.map(([q, a], i) => (
             <AccordionItem key={i} value={`item-${i}`} className="bg-card border border-border rounded-2xl px-5 [&[data-state=open]]:border-primary">
               <AccordionTrigger className="text-left hover:no-underline py-5">

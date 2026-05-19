@@ -4,23 +4,31 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 
 function category(bmi: number) {
-  if (bmi < 18.5) return { label: "Underweight", color: "bg-blue-500", pct: 20 };
-  if (bmi < 25) return { label: "Normal", color: "bg-primary", pct: 50 };
-  if (bmi < 30) return { label: "Overweight", color: "bg-amber-500", pct: 75 };
-  return { label: "Obese", color: "bg-destructive", pct: 95 };
+  if (bmi < 18.5) return { label: "Underweight", color: "bg-red-500", text: "text-red-500", pct: 20 };
+  if (bmi < 25)   return { label: "Normal",      color: "bg-green-500", text: "text-green-500", pct: 50 };
+  if (bmi < 30)   return { label: "Overweight",  color: "bg-yellow-500", text: "text-yellow-500", pct: 75 };
+  return            { label: "Obese",       color: "bg-red-500", text: "text-red-500", pct: 95 };
 }
 
 export function BMICalculator() {
   const [h, setH] = useState("");
   const [w, setW] = useState("");
   const [bmi, setBmi] = useState<number | null>(null);
+  const [errors, setErrors] = useState<{ h?: string; w?: string }>({});
 
   const calc = (e: React.FormEvent) => {
     e.preventDefault();
-    const hm = Number(h) / 100;
-    const wk = Number(w);
-    if (!hm || !wk) return;
-    setBmi(+(wk / (hm * hm)).toFixed(1));
+    const hn = Number(h);
+    const wn = Number(w);
+    const next: { h?: string; w?: string } = {};
+    if (!hn || hn <= 0) next.h = "Enter a valid height";
+    else if (hn < 50 || hn > 250) next.h = "Height must be between 50 and 250 cm";
+    if (!wn || wn <= 0) next.w = "Enter a valid weight";
+    else if (wn < 20 || wn > 300) next.w = "Weight must be between 20 and 300 kg";
+    setErrors(next);
+    if (next.h || next.w) { setBmi(null); return; }
+    const hm = hn / 100;
+    setBmi(+(wn / (hm * hm)).toFixed(1));
   };
 
   const cat = bmi ? category(bmi) : null;
@@ -34,24 +42,28 @@ export function BMICalculator() {
         </div>
 
         <div className="bg-card border border-border rounded-3xl p-8 md:p-10 mt-10">
-          <form onSubmit={calc} className="grid sm:grid-cols-3 gap-4 items-end">
+          <form onSubmit={calc} className="grid sm:grid-cols-3 gap-4 items-start" noValidate>
             <div>
               <label className="text-sm text-muted-foreground">Height (cm)</label>
-              <Input type="number" min="50" max="250" value={h} onChange={(e) => setH(e.target.value)} placeholder="175" required />
+              <Input type="number" value={h} onChange={(e) => setH(e.target.value)} placeholder="175"
+                className={errors.h ? "border-red-500 focus-visible:ring-red-500" : ""} />
+              {errors.h && <p className="text-xs text-red-500 mt-1">{errors.h}</p>}
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Weight (kg)</label>
-              <Input type="number" min="20" max="300" value={w} onChange={(e) => setW(e.target.value)} placeholder="70" required />
+              <Input type="number" value={w} onChange={(e) => setW(e.target.value)} placeholder="70"
+                className={errors.w ? "border-red-500 focus-visible:ring-red-500" : ""} />
+              {errors.w && <p className="text-xs text-red-500 mt-1">{errors.w}</p>}
             </div>
-            <Button type="submit" variant="neon" size="lg">Calculate BMI</Button>
+            <Button type="submit" variant="neon" size="lg" className="sm:mt-6">Calculate BMI</Button>
           </form>
 
           {bmi !== null && cat && (
-            <div className="mt-8">
+            <div className="mt-8 animate-fade-in">
               <div className="flex items-baseline justify-between">
                 <div>
-                  <div className="text-display text-5xl neon-text">{bmi}</div>
-                  <div className="text-sm text-muted-foreground">Your BMI · {cat.label}</div>
+                  <div className={`text-display text-5xl ${cat.text}`}>Your BMI is {bmi}</div>
+                  <div className={`text-sm mt-1 ${cat.text}`}>Category: {cat.label}</div>
                 </div>
               </div>
               <div className="mt-4 h-3 rounded-full bg-secondary overflow-hidden">
@@ -63,7 +75,7 @@ export function BMICalculator() {
             </div>
           )}
 
-          <a href="#contact" className="inline-flex items-center gap-2 mt-6 text-sm neon-text hover:underline">
+          <a href="#inquiry" className="inline-flex items-center gap-2 mt-6 text-sm neon-text hover:underline">
             Want a personalized plan? Talk to our experts <ArrowRight className="h-4 w-4" />
           </a>
         </div>

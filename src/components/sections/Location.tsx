@@ -27,7 +27,7 @@ export function Location() {
               <Row icon={Phone}>+91 98765 43210</Row>
               <Row icon={Mail}>hello@achievergym.com</Row>
             </ul>
-            <Button asChild variant="neon" size="lg" className="mt-7"><a href="https://maps.google.com/?q=Bengaluru" target="_blank" rel="noreferrer">Get Directions</a></Button>
+            <Button asChild variant="neon" size="lg" className="mt-7"><a href="https://maps.google.com/?q=45+Fitness+Boulevard+Sector+12+Bengaluru+560001" target="_blank" rel="noreferrer">Get Directions</a></Button>
           </div>
         </div>
       </div>

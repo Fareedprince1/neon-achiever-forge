@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { IMG } from "@/lib/images";
 import { ArrowRight } from "lucide-react";
+import { ComingSoonModal } from "@/components/ComingSoonModal";
 
 const posts = [
-  { tag: "Fat Loss", title: "Top 5 Exercises for Fat Loss", date: "Apr 22, 2026" },
-  { tag: "Nutrition", title: "What to Eat Before & After Workout", date: "Apr 15, 2026" },
-  { tag: "Mindset", title: "How to Stay Consistent at the Gym", date: "Apr 03, 2026" },
+  { tag: "Fat Loss",  title: "Top 5 Exercises for Fat Loss",        date: "Apr 22, 2026", slug: "top-5-exercises-fat-loss" },
+  { tag: "Nutrition", title: "What to Eat Before & After Workout",  date: "Apr 15, 2026", slug: "what-to-eat-before-after-workout" },
+  { tag: "Mindset",   title: "How to Stay Consistent at the Gym",   date: "Apr 03, 2026", slug: "how-to-stay-consistent-gym" },
 ];
 
 export function Blog() {
+  const [openTitle, setOpenTitle] = useState<string | null>(null);
   return (
     <section className="py-24">
       <div className="container mx-auto max-w-7xl px-4">
@@ -27,13 +30,21 @@ export function Blog() {
                 <h3 className="text-xl font-bold mt-3">{p.title}</h3>
                 <div className="flex items-center justify-between mt-4">
                   <span className="text-xs text-muted-foreground">{p.date}</span>
-                  <a href="#" className="inline-flex items-center gap-1 text-sm neon-text hover:underline">Read More <ArrowRight className="h-3 w-3" /></a>
+                  <button
+                    type="button"
+                    onClick={() => setOpenTitle(p.title)}
+                    className="inline-flex items-center gap-1 text-sm neon-text hover:underline"
+                    aria-label={`Read more: ${p.title}`}
+                  >
+                    Read More <ArrowRight className="h-3 w-3" />
+                  </button>
                 </div>
               </div>
             </article>
           ))}
         </div>
       </div>
+      <ComingSoonModal open={openTitle !== null} onOpenChange={(v) => !v && setOpenTitle(null)} title={openTitle ?? undefined} />
     </section>
   );
 }

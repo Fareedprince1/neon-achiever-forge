@@ -1,6 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { IMG } from "@/lib/images";
 import { ArrowRight } from "lucide-react";
+import { CountUp } from "@/components/CountUp";
+
+const stats: { value: number; suffix: string; label: string }[] = [
+  { value: 12000, suffix: "+", label: "Members" },
+  { value: 50,    suffix: "+", label: "Trainers" },
+  { value: 15,    suffix: "+", label: "Years" },
+  { value: 98,    suffix: "%", label: "Success" },
+];
 
 export function Hero() {
   return (
@@ -20,25 +28,27 @@ export function Hero() {
             Sculpt Your Body, <br />
             <span className="neon-text">Elevate</span> Your Spirit
           </h1>
+
+          {/* Stats — moved into hero, above the fold */}
+          <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
+            {stats.map((s) => (
+              <div key={s.label} className="bg-card/70 backdrop-blur border border-border rounded-2xl px-4 py-3">
+                <div className="text-display text-2xl md:text-3xl neon-text">
+                  <CountUp end={s.value} suffix={s.suffix} />
+                </div>
+                <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
           <p className="mt-6 text-lg text-muted-foreground max-w-lg">
             Achiever Gym — Where Champions Are Made. Train with elite coaches, world-class equipment, and a community that pushes you further.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild variant="neon" size="lg"><a href="#trial">Get Started <ArrowRight className="h-4 w-4" /></a></Button>
+            <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-8 py-4 h-auto neon-glow">
+              <a href="#inquiry">Get Started <ArrowRight className="h-4 w-4 ml-1" /></a>
+            </Button>
             <Button asChild variant="neon-outline" size="lg"><a href="#programs">Explore Programs</a></Button>
-          </div>
-
-          <div className="mt-10 flex flex-wrap gap-3">
-            {[
-              ["12K+", "Members"],
-              ["50+", "Trainers"],
-              ["15+", "Years"],
-            ].map(([n, l]) => (
-              <div key={l} className="bg-card/80 backdrop-blur border border-border rounded-2xl px-5 py-3">
-                <div className="text-display text-2xl neon-text">{n}</div>
-                <div className="text-xs text-muted-foreground uppercase tracking-wider">{l}</div>
-              </div>
-            ))}
           </div>
         </div>
 
