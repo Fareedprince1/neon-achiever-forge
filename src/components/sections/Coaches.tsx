@@ -1,10 +1,37 @@
 import { IMG } from "@/lib/images";
-import { Star, Instagram, Twitter, Facebook } from "lucide-react";
+import { Star, Instagram, Twitter, Linkedin, Award, ShieldCheck, Flame } from "lucide-react";
 
 const coaches = [
-  { name: "Alex Power", role: "Strength & Conditioning", cert: "ACE Certified", bio: "10+ years building elite athletes. Specializes in barbell programming." },
-  { name: "Maya Cruz", role: "HIIT & Fat Loss", cert: "NASM Certified", bio: "Metabolic conditioning expert with 500+ transformations to her name." },
-  { name: "Logan Steel", role: "Bodybuilding & Hypertrophy", cert: "CrossFit L2", bio: "National-level bodybuilder mentoring the next generation of lifters." },
+  {
+    name: "Alex Power", role: "Strength & Conditioning",
+    certs: [{ label: "ACE Certified", icon: Award }, { label: "NSCA-CPT", icon: ShieldCheck }],
+    bio: "10+ years building elite athletes. Specializes in barbell programming.",
+    socials: {
+      instagram: "https://instagram.com/alexpower_fit",
+      twitter:   "https://twitter.com/alexpower",
+      linkedin:  "https://linkedin.com/in/alexpower",
+    },
+  },
+  {
+    name: "Maya Cruz", role: "HIIT & Fat Loss",
+    certs: [{ label: "NASM Certified", icon: Award }, { label: "Precision Nutrition", icon: Flame }],
+    bio: "Metabolic conditioning expert with 500+ transformations to her name.",
+    socials: {
+      instagram: "https://instagram.com/mayacruz_hiit",
+      twitter:   "https://twitter.com/mayacruz",
+      linkedin:  "https://linkedin.com/in/mayacruz",
+    },
+  },
+  {
+    name: "Logan Steel", role: "Bodybuilding & Hypertrophy",
+    certs: [{ label: "CrossFit L2", icon: ShieldCheck }, { label: "ISSA-CPT", icon: Award }],
+    bio: "National-level bodybuilder mentoring the next generation of lifters.",
+    socials: {
+      instagram: "https://instagram.com/logansteel_bb",
+      twitter:   "https://twitter.com/logansteel",
+      linkedin:  "https://linkedin.com/in/logansteel",
+    },
+  },
 ];
 
 export function Coaches() {
@@ -23,13 +50,20 @@ export function Coaches() {
                 <img src={IMG.coaches[i]} alt={c.name} loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
               </div>
               <div className="p-6">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="text-display text-2xl">{c.name}</h3>
-                    <p className="text-sm text-primary">{c.role}</p>
-                  </div>
-                  <span className="text-[10px] bg-primary/10 text-primary border border-primary/30 rounded-full px-2 py-1 whitespace-nowrap">{c.cert}</span>
+                <div>
+                  <h3 className="text-display text-2xl">{c.name}</h3>
+                  <p className="text-sm text-primary">{c.role}</p>
                 </div>
+
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {c.certs.map(({ label, icon: Ic }) => (
+                    <span key={label} className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 bg-primary/10 text-primary border border-primary/30">
+                      <Ic className="h-3 w-3" />
+                      {label}
+                    </span>
+                  ))}
+                </div>
+
                 <p className="text-sm text-muted-foreground mt-3">{c.bio}</p>
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex gap-0.5">
@@ -38,8 +72,21 @@ export function Coaches() {
                     ))}
                   </div>
                   <div className="flex gap-2">
-                    {[Instagram, Twitter, Facebook].map((Ic, k) => (
-                      <a key={k} href="#" aria-label="social" className="h-8 w-8 rounded-full border border-border flex items-center justify-center hover:border-primary hover:text-primary"><Ic className="h-3.5 w-3.5" /></a>
+                    {([
+                      ["instagram", Instagram, c.socials.instagram, "Instagram"],
+                      ["twitter",   Twitter,   c.socials.twitter,   "Twitter"],
+                      ["linkedin",  Linkedin,  c.socials.linkedin,  "LinkedIn"],
+                    ] as const).map(([key, Ic, href, label]) => (
+                      <a
+                        key={key}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${c.name} on ${label}`}
+                        className="h-8 w-8 rounded-full border border-border flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
+                      >
+                        <Ic className="h-3.5 w-3.5" />
+                      </a>
                     ))}
                   </div>
                 </div>

@@ -79,7 +79,7 @@ export function Schedule() {
         </Tabs>
 
         <div className="text-center mt-8">
-          <Button asChild variant="neon" size="lg"><a href="#trial">Book a Class</a></Button>
+          <Button asChild variant="neon" size="lg"><a href="#inquiry">Book a Class</a></Button>
         </div>
       </div>
     </section>

@@ -4,7 +4,6 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { FreeTrialModal, useFirstVisitTrialModal } from "@/components/FreeTrialModal";
 import { Hero } from "@/components/sections/Hero";
-import { FreeTrialBanner } from "@/components/sections/FreeTrialBanner";
 import { Features } from "@/components/sections/Features";
 import { BMICalculator } from "@/components/sections/BMICalculator";
 import { WhatSetsApart } from "@/components/sections/WhatSetsApart";
@@ -46,7 +45,6 @@ function Index() {
       <Navbar />
       <main>
         <Hero />
-        <FreeTrialBanner onClaim={() => setOpen(true)} />
         <Features />
         <BMICalculator />
         <WhatSetsApart />
