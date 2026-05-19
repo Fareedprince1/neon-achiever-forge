@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,15 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLogin() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+
+  if (path !== "/admin" && path !== "/admin/") {
+    return <Outlet />;
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
