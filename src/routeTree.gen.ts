@@ -19,7 +19,6 @@ import { Route as AdminDashboardTestimonialsRouteImport } from './routes/admin.d
 import { Route as AdminDashboardScheduleRouteImport } from './routes/admin.dashboard.schedule'
 import { Route as AdminDashboardMembershipsRouteImport } from './routes/admin.dashboard.memberships'
 import { Route as AdminDashboardFreeTrialsRouteImport } from './routes/admin.dashboard.free-trials'
-import { Route as AdminDashboardContactRouteImport } from './routes/admin.dashboard.contact'
 
 const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
   id: '/terms-and-conditions',
@@ -74,11 +73,6 @@ const AdminDashboardFreeTrialsRoute =
     path: '/free-trials',
     getParentRoute: () => AdminDashboardRoute,
   } as any)
-const AdminDashboardContactRoute = AdminDashboardContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => AdminDashboardRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,7 +81,6 @@ export interface FileRoutesByFullPath {
   '/refund-policy': typeof RefundPolicyRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
-  '/admin/dashboard/contact': typeof AdminDashboardContactRoute
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
   '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
@@ -100,7 +93,6 @@ export interface FileRoutesByTo {
   '/refund-policy': typeof RefundPolicyRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
-  '/admin/dashboard/contact': typeof AdminDashboardContactRoute
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
   '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
@@ -114,7 +106,6 @@ export interface FileRoutesById {
   '/refund-policy': typeof RefundPolicyRoute
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
-  '/admin/dashboard/contact': typeof AdminDashboardContactRoute
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
   '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
@@ -129,7 +120,6 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/terms-and-conditions'
     | '/admin/dashboard'
-    | '/admin/dashboard/contact'
     | '/admin/dashboard/free-trials'
     | '/admin/dashboard/memberships'
     | '/admin/dashboard/schedule'
@@ -142,7 +132,6 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/terms-and-conditions'
     | '/admin/dashboard'
-    | '/admin/dashboard/contact'
     | '/admin/dashboard/free-trials'
     | '/admin/dashboard/memberships'
     | '/admin/dashboard/schedule'
@@ -155,7 +144,6 @@ export interface FileRouteTypes {
     | '/refund-policy'
     | '/terms-and-conditions'
     | '/admin/dashboard'
-    | '/admin/dashboard/contact'
     | '/admin/dashboard/free-trials'
     | '/admin/dashboard/memberships'
     | '/admin/dashboard/schedule'
@@ -242,18 +230,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardFreeTrialsRouteImport
       parentRoute: typeof AdminDashboardRoute
     }
-    '/admin/dashboard/contact': {
-      id: '/admin/dashboard/contact'
-      path: '/contact'
-      fullPath: '/admin/dashboard/contact'
-      preLoaderRoute: typeof AdminDashboardContactRouteImport
-      parentRoute: typeof AdminDashboardRoute
-    }
   }
 }
 
 interface AdminDashboardRouteChildren {
-  AdminDashboardContactRoute: typeof AdminDashboardContactRoute
   AdminDashboardFreeTrialsRoute: typeof AdminDashboardFreeTrialsRoute
   AdminDashboardMembershipsRoute: typeof AdminDashboardMembershipsRoute
   AdminDashboardScheduleRoute: typeof AdminDashboardScheduleRoute
@@ -261,7 +241,6 @@ interface AdminDashboardRouteChildren {
 }
 
 const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
-  AdminDashboardContactRoute: AdminDashboardContactRoute,
   AdminDashboardFreeTrialsRoute: AdminDashboardFreeTrialsRoute,
   AdminDashboardMembershipsRoute: AdminDashboardMembershipsRoute,
   AdminDashboardScheduleRoute: AdminDashboardScheduleRoute,
@@ -292,3 +271,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
