@@ -116,6 +116,57 @@ export type Database = {
         }
         Relationships: []
       }
+      members: {
+        Row: {
+          batch: string
+          created_at: string
+          email: string | null
+          id: string
+          membership_end_date: string
+          membership_start_date: string
+          name: string
+          notes: string | null
+          payment_amount: number | null
+          payment_mode: string | null
+          phone: string
+          plan: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          batch: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          membership_end_date: string
+          membership_start_date: string
+          name: string
+          notes?: string | null
+          payment_amount?: number | null
+          payment_mode?: string | null
+          phone: string
+          plan: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          batch?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          membership_end_date?: string
+          membership_start_date?: string
+          name?: string
+          notes?: string | null
+          payment_amount?: number | null
+          payment_mode?: string | null
+          phone?: string
+          plan?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       membership_inquiries: {
         Row: {
           batch: string | null
