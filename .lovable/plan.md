@@ -1,113 +1,55 @@
+## Admin Dashboard Overhaul Plan
 
-# Achiever Gym — Site-Wide Fix & Polish Plan
+Large multi-part change. I'll execute in this order so the database is ready before UI consumes it.
 
-Aesthetic, brand colors, fonts, section order, images, footer, and logo stay untouched. All work is frontend.
+### Step 1 — Database migration (one call, requires your approval)
+- `CREATE TABLE public.members` with all columns/constraints from your spec
+- Enable RLS; policy: only users with `admin` role (using existing `has_role()` helper) can do anything — `auth.uid() IS NOT NULL` would let any logged-in user in, so I'll use `has_role(auth.uid(), 'admin')` to match the pattern of every other table in the project
+- `updated_at` trigger using existing `update_updated_at_column()` pattern
+- Seed the 10 members from your spec
 
----
+### Step 2 — Remove Contact Queries
+- Delete `src/routes/admin.dashboard.contact.tsx`
+- Drop "Contact Queries" nav item from `AdminShell.tsx`
+- Drop the contact card + `contact_queries` table from `Overview.tsx`; rearrange to your 2×3 grid (Leads Today / This Month / Pending → Free Trials / Memberships / Conversion Rate)
+- Confirm homepage `InquiryForm.tsx` only writes to `membership_inquiries` (it already does — no dual-write to remove, will just verify)
 
-## 1. Critical Bug Fixes
+### Step 3 — Homepage Free Trial form at `#trial`
+- Build a real form section (Name, Phone, Goal, Batch, Claim button) that writes to `free_trial_requests` (existing table — has name/phone/goal/batch/status, no date column; I'll use `created_at` as the date rather than add a column)
+- Wire the 3 hero/banner CTAs that currently scroll to `#inquiry` or open the modal to point to `#trial` instead
+- Success toast: "Your free trial is confirmed! We'll call you shortly."
 
-### BMI Calculator (`src/components/sections/BMICalculator.tsx`)
-- Add input validation: height 50–250 cm, weight 20–300 kg, reject ≤0. Show inline red error under each field.
-- Show result block below the button: "Your BMI is X.X", category label, and color-coded bar (green = Normal, yellow = Overweight, red = Underweight/Obese).
-- Add CTA link "Want a personalized plan? Talk to our experts" → `#inquiry`.
+### Step 4 — Members page (the big one) at `/admin/dashboard/members`
+- New route file `admin.dashboard.members.tsx`
+- Add sidebar nav item with `IdCard` icon between Overview and Free Trials
+- Components: stat cards (4), expiring banner, filter bar (search, plan, status, batch, date range, export, add), table with sort/pagination, status/days-left logic, row actions (call/WA/edit/delete with 5s undo)
+- Add Member modal (zod-validated, duration → end date preview)
+- Edit Member modal with: Activate/Deactivate toggle (separate from renewal), plan-card picker, duration buttons, renewal preview, payment fields, notes history
+- Member detail side drawer (avatar by plan, timeline bar, quick actions, notes log + add note)
+- Client-side display status (Active/Expiring Soon/Expired/Inactive) — DB status only changes on admin action, per your spec
+- CSV export, WhatsApp templates URL-encoded
 
-### Inquiry Form (`src/components/sections/InquiryForm.tsx`)
-- Add three required fields above the existing dropdowns: Full Name, Phone (10-digit regex), Email.
-- Keep existing Goal / Batch / Plan dropdowns.
-- Submit handler: validate via zod, highlight invalid fields in red with messages, show green success banner "We'll contact you within 24 hours!", reset form. Continue persisting to Supabase as today.
+### Step 5 — Global UI polish
+- Sidebar: GA avatar header, 220px width, neon-green hover border, logout confirmation dialog
+- Top header: breadcrumb, bell with today's-new dropdown, search expand, GA avatar dropdown
+- Table styles: alternating rows, sticky headers, hover border (applied via shared classes)
+- Overview: clickable hover-scale cards, 7-day bar chart (using `recharts` — already in shadcn chart), recent activity feed (last 10 across tables)
 
-### Schedule (`src/components/sections/Schedule.tsx` + seed data)
-- Insert the full weekly timetable (13 classes Mon–Sun, exactly as specified) into `class_schedule` via a data insert so the existing realtime table renders them.
-- Change the "Book a Class" button to scroll to `#inquiry`.
+### Step 6 — Per-page enhancements (Free Trials / Memberships / Schedule / Testimonials)
+- Free Trials: email column, empty state, WA button, "Convert to Member →" prefills Add Member modal via sessionStorage
+- Memberships: duplicate phone highlight, view details modal, reply modal, delete + undo
+- Schedule: weekly 7-col grid, inline spots save, add-class modal, capacity summary
+- Testimonials: warning on incomplete cards, rating/duration/plan in modal, drag-reorder (using `@dnd-kit/sortable` — already installed via shadcn), preview button
 
-### Pricing Toggle (`src/components/sections/Pricing.tsx`)
-- Replace the current `* 0.8` math with explicit yearly prices: Basic 799, Pro 1,439, Elite 2,399.
-- When Yearly is active, show a "Save ₹X,XXX/yr" badge per card (2,400 / 4,320 / 7,200). Remove badges when Monthly.
+### Technical notes
+- Reusing existing `has_role()` for RLS instead of `auth.uid() IS NOT NULL` (matches every other table — safer, your spec's policy would have allowed any authenticated user)
+- Date pickers: using shadcn `Calendar` (already installed) inside `Popover` rather than adding Flatpickr as a new dep
+- Icons: project uses `lucide-react`, not Tabler — I'll map `ti-*` to lucide equivalents (`IdCard`, `AlertTriangle`, `Phone`, `MessageCircle`, `Edit`, `Trash2`, `Bell`, `Search`, `Copy`, `UserPlus`, `FileText`)
+- Charts: `recharts` (already in shadcn `chart.tsx`)
+- Drag-reorder: `@dnd-kit/core` + `@dnd-kit/sortable` — install if missing
+- All new server-side reads stay client-side via the existing browser supabase client (RLS gates admin access), consistent with current admin pages
 
----
+### Scale & approach
+This touches ~15 files and adds ~8 new ones. I'll implement in the order above, batching parallel edits where files are independent. Database migration goes first and waits for your approval before any code changes.
 
-## 2. Dead Links & Broken Buttons
-
-### Features / Training Pillars (`src/components/sections/Features.tsx`)
-- Wire the 4 "Learn More" buttons: Cardio → `#schedule`, Strength → `#programs`, Fat Loss → `#pricing`, HIIT → `#programs`.
-
-### Program Cards (`src/components/sections/Programs.tsx`)
-- Each card click scrolls to `#inquiry` and pre-fills the Plan dropdown (via a small shared store or URL hash like `#inquiry?plan=...` read by the form).
-- Add per-card metadata: Difficulty badge (Beginner/Intermediate/Advanced), Duration (e.g. "8 weeks"), Sessions/week (e.g. "3×/week").
-
-### Coaches (`src/components/sections/Coaches.tsx`)
-- Replace `href="#"` with the 9 specified social URLs (Alex / Maya / Logan × IG, X, LinkedIn).
-- Add `target="_blank"`, `rel="noopener noreferrer"`, and descriptive `aria-label` per link.
-- Replace plain certification text with styled pill chips (accent border + small icon).
-
-### Blog (`src/components/sections/Blog.tsx`)
-- Point the 3 "Read More" links to `/blog/top-5-exercises-fat-loss`, `/blog/what-to-eat-before-after-workout`, `/blog/how-to-stay-consistent-gym`.
-- Since the article routes don't exist, open a "Coming Soon — subscribe to be notified" modal with an email capture instead of routing.
-
-### Location / Get Directions (`src/components/sections/Location.tsx`)
-- Update the maps href to `https://maps.google.com/?q=45+Fitness+Boulevard+Sector+12+Bengaluru+560001` and update the displayed address text accordingly.
-
----
-
-## 3. CTA & Conversion
-
-### Hero (`src/components/sections/Hero.tsx`)
-- Promote "Get Started" to solid filled primary (brand accent, larger padding) and scroll to `#inquiry`.
-- Keep "Explore Programs" as outline/ghost → `#programs`.
-- Move the stats row (12K+, 50+, 15+, 98%) into the hero, directly under the headline, above the fold (see §5 for the count-up animation).
-
-### Free-Trial Banner (`src/routes/index.tsx`)
-- Remove the `<FreeTrialBanner />` section between Hero and Features.
-
-### Navbar (`src/components/Navbar.tsx`)
-- "Get 3 Days Free" button now scrolls to `#inquiry` instead of `#trial`.
-
----
-
-## 4. Navigation
-
-### Active section indicator (`Navbar.tsx`)
-- Add an IntersectionObserver hook that tracks visible section IDs and stores the active one in state.
-- The matching link gets the brand accent color + a bottom-border indicator, with a 200ms transition.
-
-### Mobile drawer
-- Hamburger already exists; convert the dropdown into a full-width slide-down drawer with vertically stacked links at 48px tap targets, an explicit ✕ close button, and auto-close on link click.
-
----
-
-## 5. UX Polish
-
-### WhatsApp FAB (`src/components/WhatsAppFab.tsx`)
-- Hidden until the user scrolls past 30% of page height (scroll listener with `requestAnimationFrame`).
-- Tooltip on hover ("Chat with us on WhatsApp") — already partially present, refine.
-- On screens <768px, apply `bottom: 80px` to clear mobile safe area.
-
-### FAQ (`src/components/sections/FAQ.tsx`)
-- Use Radix Accordion in single-open mode, `defaultValue` = first item.
-- Animated chevron rotates 180° when open via CSS transition.
-
-### Pricing cards
-- Pulsing green dot next to "Most Popular" on the Pro plan.
-- Hover: `translateY(-4px)` + accent border glow.
-- Add the "Not sure? Book a free consultation →" link under all 3 cards (already partially present — keep and wire to `#inquiry`).
-
-### Animated stat counters (in Hero)
-- New `<CountUp>` helper using `requestAnimationFrame`, 1.5 s ease-out, runs once on mount.
-
-### Trust badges
-- Coach certification chips rebuilt as pill components with accent border + lucide icon (Award/ShieldCheck).
-
----
-
-## 6. Out of Scope
-Color scheme, typography, section ordering, images, footer, legal links, and the ACHIEVER logo are explicitly preserved.
-
----
-
-## Technical Notes
-
-- **Plan pre-fill from Program cards:** simplest approach is a tiny module-level store (`useSyncExternalStore`) or `sessionStorage.setItem('preselectPlan', …)` + `dispatchEvent(new Event('plan-preselect'))`; the Inquiry form reads it on mount.
-- **Schedule seeding:** insert the 13 rows via the Supabase insert tool (table `class_schedule` already exists with the right columns).
-- **Validation:** use `zod` (already a dependency) for both Inquiry and BMI inputs.
-- **Files touched:** `BMICalculator.tsx`, `InquiryForm.tsx`, `Schedule.tsx`, `Pricing.tsx`, `Features.tsx`, `Programs.tsx`, `Coaches.tsx`, `Blog.tsx` (+ new `ComingSoonModal`), `Location.tsx`, `Hero.tsx` (+ new `CountUp.tsx`), `Navbar.tsx`, `WhatsAppFab.tsx`, `FAQ.tsx`, `src/routes/index.tsx`. No backend or schema changes beyond the schedule data insert.
+Approve to proceed.

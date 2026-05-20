@@ -18,6 +18,7 @@ import { Gallery } from "@/components/sections/Gallery";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { Blog } from "@/components/sections/Blog";
 import { InquiryForm } from "@/components/sections/InquiryForm";
+import { FreeTrialForm } from "@/components/sections/FreeTrialForm";
 import { FAQ } from "@/components/sections/FAQ";
 import { Location } from "@/components/sections/Location";
 
@@ -53,6 +54,7 @@ function Index() {
         <Equipment />
         <Coaches />
         <Pricing />
+        <FreeTrialForm />
         <Transformations />
         <CertStrip />
         <Gallery />
