@@ -46,7 +46,7 @@ export function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-8 py-4 h-auto neon-glow">
-              <a href="#inquiry">Get Started <ArrowRight className="h-4 w-4 ml-1" /></a>
+              <a href="#trial">Get Started <ArrowRight className="h-4 w-4 ml-1" /></a>
             </Button>
             <Button asChild variant="neon-outline" size="lg"><a href="#programs">Explore Programs</a></Button>
           </div>

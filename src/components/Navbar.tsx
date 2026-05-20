@@ -79,7 +79,7 @@ export function Navbar() {
 
         <div className="hidden lg:flex">
           <Button asChild variant="neon" size="pill">
-            <a href="#inquiry">Get 3 Days Free</a>
+            <a href="#trial">Get 3 Days Free</a>
           </Button>
         </div>
 
@@ -121,7 +121,7 @@ export function Navbar() {
               );
             })}
             <Button asChild variant="neon" size="pill" className="mt-4 self-start">
-              <a href="#inquiry" onClick={() => setOpen(false)}>Get 3 Days Free</a>
+              <a href="#trial" onClick={() => setOpen(false)}>Get 3 Days Free</a>
             </Button>
           </nav>
         </div>
