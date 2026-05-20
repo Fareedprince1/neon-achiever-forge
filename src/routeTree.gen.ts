@@ -18,6 +18,7 @@ import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminDashboardTestimonialsRouteImport } from './routes/admin.dashboard.testimonials'
 import { Route as AdminDashboardScheduleRouteImport } from './routes/admin.dashboard.schedule'
 import { Route as AdminDashboardMembershipsRouteImport } from './routes/admin.dashboard.memberships'
+import { Route as AdminDashboardMembersRouteImport } from './routes/admin.dashboard.members'
 import { Route as AdminDashboardFreeTrialsRouteImport } from './routes/admin.dashboard.free-trials'
 
 const TermsAndConditionsRoute = TermsAndConditionsRouteImport.update({
@@ -67,6 +68,11 @@ const AdminDashboardMembershipsRoute =
     path: '/memberships',
     getParentRoute: () => AdminDashboardRoute,
   } as any)
+const AdminDashboardMembersRoute = AdminDashboardMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => AdminDashboardRoute,
+} as any)
 const AdminDashboardFreeTrialsRoute =
   AdminDashboardFreeTrialsRouteImport.update({
     id: '/free-trials',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
+  '/admin/dashboard/members': typeof AdminDashboardMembersRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
   '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
   '/admin/dashboard/testimonials': typeof AdminDashboardTestimonialsRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
+  '/admin/dashboard/members': typeof AdminDashboardMembersRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
   '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
   '/admin/dashboard/testimonials': typeof AdminDashboardTestimonialsRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/terms-and-conditions': typeof TermsAndConditionsRoute
   '/admin/dashboard': typeof AdminDashboardRouteWithChildren
   '/admin/dashboard/free-trials': typeof AdminDashboardFreeTrialsRoute
+  '/admin/dashboard/members': typeof AdminDashboardMembersRoute
   '/admin/dashboard/memberships': typeof AdminDashboardMembershipsRoute
   '/admin/dashboard/schedule': typeof AdminDashboardScheduleRoute
   '/admin/dashboard/testimonials': typeof AdminDashboardTestimonialsRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/admin/dashboard'
     | '/admin/dashboard/free-trials'
+    | '/admin/dashboard/members'
     | '/admin/dashboard/memberships'
     | '/admin/dashboard/schedule'
     | '/admin/dashboard/testimonials'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/admin/dashboard'
     | '/admin/dashboard/free-trials'
+    | '/admin/dashboard/members'
     | '/admin/dashboard/memberships'
     | '/admin/dashboard/schedule'
     | '/admin/dashboard/testimonials'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/admin/dashboard'
     | '/admin/dashboard/free-trials'
+    | '/admin/dashboard/members'
     | '/admin/dashboard/memberships'
     | '/admin/dashboard/schedule'
     | '/admin/dashboard/testimonials'
@@ -223,6 +235,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardMembershipsRouteImport
       parentRoute: typeof AdminDashboardRoute
     }
+    '/admin/dashboard/members': {
+      id: '/admin/dashboard/members'
+      path: '/members'
+      fullPath: '/admin/dashboard/members'
+      preLoaderRoute: typeof AdminDashboardMembersRouteImport
+      parentRoute: typeof AdminDashboardRoute
+    }
     '/admin/dashboard/free-trials': {
       id: '/admin/dashboard/free-trials'
       path: '/free-trials'
@@ -235,6 +254,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminDashboardRouteChildren {
   AdminDashboardFreeTrialsRoute: typeof AdminDashboardFreeTrialsRoute
+  AdminDashboardMembersRoute: typeof AdminDashboardMembersRoute
   AdminDashboardMembershipsRoute: typeof AdminDashboardMembershipsRoute
   AdminDashboardScheduleRoute: typeof AdminDashboardScheduleRoute
   AdminDashboardTestimonialsRoute: typeof AdminDashboardTestimonialsRoute
@@ -242,6 +262,7 @@ interface AdminDashboardRouteChildren {
 
 const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
   AdminDashboardFreeTrialsRoute: AdminDashboardFreeTrialsRoute,
+  AdminDashboardMembersRoute: AdminDashboardMembersRoute,
   AdminDashboardMembershipsRoute: AdminDashboardMembershipsRoute,
   AdminDashboardScheduleRoute: AdminDashboardScheduleRoute,
   AdminDashboardTestimonialsRoute: AdminDashboardTestimonialsRoute,
